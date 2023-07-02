@@ -14,8 +14,8 @@ const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
 const collectionHymns = collection(db, 'hinos-ccb')
 
-const formAddHymn = document.querySelector('data-js["add-hymn-form"]')
-const hymnsList = document.querySelector('data-js["hymns-list"]')
+const formAddHymn = document.querySelector('[data-js="add-hymn-form"]')
+// const hymnsList = document.querySelector('[data-js="hymns-list"]')
 
 onSnapshot(collectionHymns, querySnapshot)
 
