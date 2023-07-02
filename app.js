@@ -53,8 +53,10 @@ formAddHymn.addEventListener('submit', async function(e) {
     const newItems = { ...items }
     newItems.updatedAt = newItems.createdAt
     delete newItems.createdAt
-    const { id: updatedId } = await updateDoc(doc(db, 'hinos', idToUpdate), newItems)
-    console.log('Document atualizado no ID', updatedId)
+    // const { id: updatedId } = await updateDoc(doc(db, 'hinos', idToUpdate), newItems)
+    // console.log('Document atualizado no ID', updatedId)
+    const yes = await updateDoc(doc(db, 'hinos', idToUpdate), newItems)
+    console.log(yes)
 
     this.reset()
     return
