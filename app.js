@@ -75,21 +75,28 @@ const init = () => {
       const rightDoc = docOfHymnNumber._document.data.value.mapValue.fields
 
       for (const prop in rightDoc) {
-        const input = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
+        const inputOrSelect = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
+        const docValue = Object.values(rightDoc[prop]).at(0)
 
-        if (!input) {
+        if (!inputOrSelect) {
           if (prop === 'id')
-            formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${rightDoc[prop]}">`)
+            formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${docValue}">`)
           
           continue
         }
 
-        if (input.tagName === 'SELECT') {
-          [...input.options].forEach(option => option.selected = option.value == rightDoc[prop] ? true : false)
+        if (inputOrSelect.tagName === 'SELECT') {
+          for (const option of inputOrSelect.options) {
+            if (option.value === docValue) {
+              option.selected = true
+              break
+            }
+          }
+
           continue
         }
 
-        input.value = Object.values(rightDoc[prop]).at(0)
+        inputOrSelect.value = docValue
       }
     })
   }
