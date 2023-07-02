@@ -20,10 +20,8 @@ const getCurrentUrl = () => new URL(location)
 const getUrlParam = strGet => getCurrentUrl().searchParams.get(strGet)
 const issetHymnNumber = () => getUrlParam('number')
 
-const openPdf = () => open('hinario_5_organista.pdf', '_blank')
-
 const formAddHymn = document.querySelector('[data-js="add-hymn-form"]')
-// const hymnsList = document.querySelector('[data-js="hymns-list"]')
+const btnOpenPdf = document.querySelector('button[open-pdf]')
 
 onSnapshot(collectionHymns, querySnapshot => {
   const { hasPendingWrites } = querySnapshot.metadata
@@ -145,4 +143,5 @@ const init = () => {
   }
 }
 
+btnOpenPdf.addEventListener('click', () => open('hinario_5_organista.pdf', '_blank'))
 document.addEventListener('DOMContentLoaded', init)
