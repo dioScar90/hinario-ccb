@@ -66,7 +66,7 @@ formAddHymn.addEventListener('submit', async function(e) {
   this.reset()
 })
 
-const prepareInputsToUpdate = () => {
+const prepareInputsToUpdate = hymnNumber => {
   onSnapshot(collectionHymns, ({ docs }) => {
     const checkHymnNumber = collectionDoc => {
       return collectionDoc._document.data.value.mapValue.fields.number?.integerValue == hymnNumber ||
@@ -78,6 +78,7 @@ const prepareInputsToUpdate = () => {
     const docId = docOfHymnNumber.id
   
     formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${docId}">`)
+    formAddHymn.querySelector('button[type="submit"]').innerText = 'Atualizar'
   
     for (const prop in fields) {
       const inputOrSelect = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
@@ -110,7 +111,7 @@ const init = () => {
   const hymnNumber = issetHymnNumber()
 
   if (hymnNumber) {
-    prepareInputsToUpdate()
+    prepareInputsToUpdate(hymnNumber)
   }
 }
 
