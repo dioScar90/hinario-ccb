@@ -44,10 +44,12 @@ formAddHymn.addEventListener('submit', async function(e) {
   const update = items?.update === "true"
 
   if (update === true) {
-    delete items.update
-    items.updatedAt = serverTimestamp()
-    const doc = await updateDoc(collectionHymns, items)
-    console.log('Document criado com o ID', doc.id)
+    const newItems = { ...items }
+    delete newItems.update
+    delete newItems.createdAt
+    newItems.updatedAt = serverTimestamp()
+    const doc = await updateDoc(doc(db, 'hinos', newItems.id), newItems)
+    console.log('Document atualizado no ID', doc.id)
 
     this.reset()
     return
@@ -74,6 +76,11 @@ const init = () => {
       for (const prop in rightDoc) {
         const input = formAddHymn.querySelector(`input[name="${prop}"]`)
 
+        if (!input && prop === 'id') {
+          formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${rightDoc[prop]}">`)
+          continue
+        }
+
         if (input.tagName === 'SELECT') {
           [...input.options].forEach(option => option.selected = option.value == rightDoc[prop] ? true : false)
           continue
@@ -81,8 +88,6 @@ const init = () => {
 
         input.value = rightDoc[prop]
       }
-
-      formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="update" value="true">`)
     })
   }
 }
