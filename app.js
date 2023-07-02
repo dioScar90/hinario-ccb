@@ -30,11 +30,13 @@ const treatFormValues = (form, timestamp = false) => {
   return items
 }
 
-formAddHymn.addEventListener('submit', async (e) => {
+formAddHymn.addEventListener('submit', async function(e) {
   e.preventDefault()
 
-  const items = treatFormValues(formAddHymn, true)
+  const items = treatFormValues(this, true)
 
   const doc = await addDoc(collectionHymns, items)
   console.log('Document criado com o ID', doc.id)
+
+  this.reset()
 })
