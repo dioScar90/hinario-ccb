@@ -71,7 +71,8 @@ const init = () => {
         doc._document.data.value.mapValue.fields.number?.stringValue == hymnNumber
       }
 
-      const rightDoc = docs.find(checkHymnNumber)
+      const docOfHymnNumber = docs.find(checkHymnNumber)
+      const rightDoc = docOfHymnNumber._document.data.value.mapValue.fields
 
       for (const prop in rightDoc) {
         const input = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
