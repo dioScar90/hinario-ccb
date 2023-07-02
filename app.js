@@ -74,7 +74,7 @@ const init = () => {
       const rightDoc = docs.find(checkHymnNumber)
 
       for (const prop in rightDoc) {
-        const input = formAddHymn.querySelector(`input[name="${prop}"]`)
+        const input = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
 
         if (!input && prop === 'id') {
           formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${rightDoc[prop]}">`)
