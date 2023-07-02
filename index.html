@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hinário CCB</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js" defer></script>
+</head>
+<body>
+  <main class="container">
+    <form action="" data-js="add-hymn-form">
+      <label for="number">Número:</label>
+      <input type="number" name="number" id="number" min="1" max="480" step="1">
+
+      <label for="author">Autor:</label>
+      <input type="text" name="author" id="author">
+
+      <label for="title">Título:</label>
+      <input type="text" name="title" id="title">
+
+      <label for="tonality">Tonalidade</label>
+      <select name="tonality" id="tonality">
+        <option value="" hidden disabled selected>-- Escolha --</option>
+        <option value="C">Dó</option>
+        <option value="D">Ré</option>
+        <option value="Eb">Mi bemol</option>
+        <option value="E">Mi</option>
+        <option value="F">Fá</option>
+        <option value="G">Sol</option>
+        <option value="A">Lá</option>
+        <option value="B">Si</option>
+      </select>
+
+      <Button type="reset">Reset</Button>
+      <button type="submit">Criar</button>
+    </form>
+  </main>
+</body>
+</html>
