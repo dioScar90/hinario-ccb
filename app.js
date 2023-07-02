@@ -17,7 +17,7 @@ const collectionHymns = collection(db, 'hinos-ccb')
 const formAddHymn = document.querySelector('[data-js="add-hymn-form"]')
 // const hymnsList = document.querySelector('[data-js="hymns-list"]')
 
-onSnapshot(collectionHymns, querySnapshot)
+onSnapshot(collectionHymns, querySnapshot => console.log(querySnapshot))
 
 const treatFormValues = (form, timestamp = false) => {
   const data = new FormData(form)
