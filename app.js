@@ -89,7 +89,7 @@ const init = () => {
           continue
         }
 
-        input.value = rightDoc[prop]
+        input.value = Object.values(rightDoc[prop]).at(0)
       }
     })
   }
