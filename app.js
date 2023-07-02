@@ -20,7 +20,13 @@ const issetHymnNumber = () => getUrlParam('number')
 const formAddHymn = document.querySelector('[data-js="add-hymn-form"]')
 // const hymnsList = document.querySelector('[data-js="hymns-list"]')
 
-onSnapshot(collectionHymns, querySnapshot => console.log(querySnapshot))
+onSnapshot(collectionHymns, querySnapshot => {
+  const { hasPendingWrites } = querySnapshot.metadata
+  if (!hasPendingWrites)
+    return
+    
+  console.log(querySnapshot)
+})
 
 const treatFormValues = (form, timestamp = false) => {
   const data = new FormData(form)
@@ -47,57 +53,64 @@ formAddHymn.addEventListener('submit', async function(e) {
     const newItems = { ...items }
     newItems.updatedAt = newItems.createdAt
     delete newItems.createdAt
-    const doc = await updateDoc(doc(db, 'hinos', idToUpdate), newItems)
-    console.log('Document atualizado no ID', doc.id)
+    const { id: updatedId } = await updateDoc(doc(db, 'hinos', idToUpdate), newItems)
+    console.log('Document atualizado no ID', updatedId)
 
     this.reset()
     return
   }
 
-  const doc = await addDoc(collectionHymns, items)
-  console.log('Document criado com o ID', doc.id)
+  const { id: createdId } = await addDoc(collectionHymns, items)
+  console.log('Document criado com o ID', createdId)
 
   this.reset()
 })
+
+const prepareInputsToUpdate = () => {
+  onSnapshot(collectionHymns, ({ docs }) => {
+    const checkHymnNumber = collectionDoc => {
+      return collectionDoc._document.data.value.mapValue.fields.number?.integerValue == hymnNumber ||
+      collectionDoc._document.data.value.mapValue.fields.number?.stringValue == hymnNumber
+    }
+  
+    const docOfHymnNumber = docs.find(checkHymnNumber)
+    const fields = docOfHymnNumber._document.data.value.mapValue.fields
+    const docId = docOfHymnNumber.id
+  
+    formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${docId}">`)
+  
+    for (const prop in fields) {
+      const inputOrSelect = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
+      const docValue = Object.values(fields[prop]).at(0)
+  
+      if (!inputOrSelect) {
+        continue
+      }
+  
+      if (inputOrSelect.tagName === 'SELECT') {
+        for (const option of inputOrSelect.options) {
+          if (option.value === docValue) {
+            option.selected = true
+            break
+          }
+        }
+  
+        continue
+      }
+  
+      inputOrSelect.value = docValue
+
+      if (inputOrSelect.name === 'number')
+        inputOrSelect.readOnly = true
+    }
+  })
+}
 
 const init = () => {
   const hymnNumber = issetHymnNumber()
 
   if (hymnNumber) {
-    onSnapshot(collectionHymns, ({ docs }) => {
-      const checkHymnNumber = doc => {
-        return doc._document.data.value.mapValue.fields.number?.integerValue == hymnNumber ||
-        doc._document.data.value.mapValue.fields.number?.stringValue == hymnNumber
-      }
-
-      const docOfHymnNumber = docs.find(checkHymnNumber)
-      const fields = docOfHymnNumber._document.data.value.mapValue.fields
-      const docId = docOfHymnNumber.id
-
-      formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${docId}">`)
-
-      for (const prop in fields) {
-        const inputOrSelect = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
-        const docValue = Object.values(fields[prop]).at(0)
-
-        if (!inputOrSelect) {
-          continue
-        }
-
-        if (inputOrSelect.tagName === 'SELECT') {
-          for (const option of inputOrSelect.options) {
-            if (option.value === docValue) {
-              option.selected = true
-              break
-            }
-          }
-
-          continue
-        }
-
-        inputOrSelect.value = docValue
-      }
-    })
+    prepareInputsToUpdate()
   }
 }
 
