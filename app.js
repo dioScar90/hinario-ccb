@@ -71,16 +71,16 @@ const init = () => {
       }
 
       const docOfHymnNumber = docs.find(checkHymnNumber)
-      const rightDoc = docOfHymnNumber._document.data.value.mapValue.fields
+      const fields = docOfHymnNumber._document.data.value.mapValue.fields
+      const docId = docOfHymnNumber.id
 
-      for (const prop in rightDoc) {
+      formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${docId}">`)
+
+      for (const prop in fields) {
         const inputOrSelect = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
-        const docValue = Object.values(rightDoc[prop]).at(0)
+        const docValue = Object.values(fields[prop]).at(0)
 
         if (!inputOrSelect) {
-          if (prop === 'id')
-            formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${docValue}">`)
-          
           continue
         }
 
