@@ -21,7 +21,7 @@ const getUrlParam = strGet => getCurrentUrl().searchParams.get(strGet)
 const issetHymnNumber = () => getUrlParam('number')
 
 const formAddHymn = document.querySelector('[data-js="add-hymn-form"]')
-const btnOpenPdf = document.querySelector('button[open-pdf]')
+const btnOpenPdf = document.querySelector('button[data-pdf]')
 
 onSnapshot(collectionHymns, querySnapshot => {
   const { hasPendingWrites } = querySnapshot.metadata
