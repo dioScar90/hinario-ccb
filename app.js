@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js'
-import { getFirestore, collection, query, where, addDoc, updateDoc, serverTimestamp, doc, deleteDoc, onSnapshot, } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js'
+import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp, doc, deleteDoc, onSnapshot, } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDWvbYwZK6CrG1HRrzQzTryYpzsWrpxm-4',
@@ -68,10 +68,10 @@ formAddHymn.addEventListener('submit', async function(e) {
   this.reset()
 })
 
-const prepareInputsToUpdate = hymnNumber => {
-  const hymn = query(collectionHymns, where('number', '==', hymnNumber))
-
-  console.log(hymn)
+const prepareInputsToUpdate = async hymnNumber => {
+  const hymns = await query(collectionHymns, where('number', '==', hymnNumber))
+  const hymn = await getDocs(hymns)
+  hymn.forEach(doc => console.log(doc))
   // onSnapshot(collectionHymns, ({ docs }) => {
   //   const checkHymnNumber = collectionDoc => {
   //     return collectionDoc._document.data.value.mapValue.fields.number?.integerValue == hymnNumber ||
