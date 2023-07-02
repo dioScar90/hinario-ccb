@@ -12,7 +12,7 @@ const firebaseConfig = {
 }
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
-const collectionHymns = collection(db, 'hinos-ccb')
+const collectionHymns = collection(db, 'hinos')
 
 const formAddHymn = document.querySelector('[data-js="add-hymn-form"]')
 // const hymnsList = document.querySelector('[data-js="hymns-list"]')
