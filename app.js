@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js'
-import { getFirestore, collection, addDoc, updateDoc, serverTimestamp, doc, deleteDoc, onSnapshot, } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js'
+import { getFirestore, collection, query, where, addDoc, updateDoc, serverTimestamp, doc, deleteDoc, onSnapshot, } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDWvbYwZK6CrG1HRrzQzTryYpzsWrpxm-4',
@@ -69,44 +69,47 @@ formAddHymn.addEventListener('submit', async function(e) {
 })
 
 const prepareInputsToUpdate = hymnNumber => {
-  onSnapshot(collectionHymns, ({ docs }) => {
-    const checkHymnNumber = collectionDoc => {
-      return collectionDoc._document.data.value.mapValue.fields.number?.integerValue == hymnNumber ||
-      collectionDoc._document.data.value.mapValue.fields.number?.stringValue == hymnNumber
-    }
-  
-    const docOfHymnNumber = docs.find(checkHymnNumber)
-    const fields = docOfHymnNumber._document.data.value.mapValue.fields
-    const docId = docOfHymnNumber.id
-  
-    formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${docId}">`)
-    formAddHymn.querySelector('button[type="submit"]').innerText = 'Atualizar'
-  
-    for (const prop in fields) {
-      const inputOrSelect = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
-      const docValue = Object.values(fields[prop]).at(0)
-  
-      if (!inputOrSelect) {
-        continue
-      }
-  
-      if (inputOrSelect.tagName === 'SELECT') {
-        for (const option of inputOrSelect.options) {
-          if (option.value === docValue) {
-            option.selected = true
-            break
-          }
-        }
-  
-        continue
-      }
-  
-      inputOrSelect.value = docValue
+  const hymn = query(collectionHymns, where('number', '==', hymnNumber))
 
-      if (inputOrSelect.name === 'number')
-        inputOrSelect.readOnly = true
-    }
-  })
+  console.log(hymn)
+  // onSnapshot(collectionHymns, ({ docs }) => {
+  //   const checkHymnNumber = collectionDoc => {
+  //     return collectionDoc._document.data.value.mapValue.fields.number?.integerValue == hymnNumber ||
+  //     collectionDoc._document.data.value.mapValue.fields.number?.stringValue == hymnNumber
+  //   }
+  
+  //   const docOfHymnNumber = docs.find(checkHymnNumber)
+  //   const fields = docOfHymnNumber._document.data.value.mapValue.fields
+  //   const docId = docOfHymnNumber.id
+  
+  //   formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${docId}">`)
+  //   formAddHymn.querySelector('button[type="submit"]').innerText = 'Atualizar'
+  
+  //   for (const prop in fields) {
+  //     const inputOrSelect = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
+  //     const docValue = Object.values(fields[prop]).at(0)
+  
+  //     if (!inputOrSelect) {
+  //       continue
+  //     }
+  
+  //     if (inputOrSelect.tagName === 'SELECT') {
+  //       for (const option of inputOrSelect.options) {
+  //         if (option.value === docValue) {
+  //           option.selected = true
+  //           break
+  //         }
+  //       }
+  
+  //       continue
+  //     }
+  
+  //     inputOrSelect.value = docValue
+
+  //     if (inputOrSelect.name === 'number')
+  //       inputOrSelect.readOnly = true
+  //   }
+  // })
 }
 
 const init = () => {
