@@ -41,14 +41,13 @@ formAddHymn.addEventListener('submit', async function(e) {
   e.preventDefault()
 
   const items = treatFormValues(this, true)
-  const update = items?.update === "true"
+  const idToUpdate = items?.id
 
-  if (update === true) {
+  if (idToUpdate) {
     const newItems = { ...items }
-    delete newItems.update
+    newItems.updatedAt = newItems.createdAt
     delete newItems.createdAt
-    newItems.updatedAt = serverTimestamp()
-    const doc = await updateDoc(doc(db, 'hinos', newItems.id), newItems)
+    const doc = await updateDoc(doc(db, 'hinos', idToUpdate), newItems)
     console.log('Document atualizado no ID', doc.id)
 
     this.reset()
