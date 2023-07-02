@@ -6,7 +6,8 @@
   <title>Hinário CCB</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="stylesheet" href="style.css">
-  <script type="module" src="app.js" defer></script>
+  <script type="module" src="script.js" defer></script>
+  
 </head>
 <body>
   <main class="container">
@@ -39,5 +40,158 @@
       <button type="submit">Criar</button>
     </form>
   </main>
+
+  <!-- <script type="module" defer>
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js'
+    import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp, doc, deleteDoc, onSnapshot, }
+      from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js'
+
+    const firebaseConfig = {
+      apiKey: 'AIzaSyDWvbYwZK6CrG1HRrzQzTryYpzsWrpxm-4',
+      authDomain: 'hinario-ccb-c94f3.firebaseapp.com',
+      projectId: 'hinario-ccb-c94f3',
+      storageBucket: 'hinario-ccb-c94f3.appspot.com',
+      messagingSenderId: '525179451222',
+      appId: '1:525179451222:web:645112b1647301d30708f7',
+      measurementId: 'G-8L1BJ8ZJ68',
+    }
+    const app = initializeApp(firebaseConfig)
+    const db = getFirestore(app)
+    const collectionHymns = collection(db, 'hinos')
+
+    const getUrlParam = strGet => new URL(location).searchParams.get(strGet)
+    const issetHymnNumber = () => getUrlParam('number')
+
+    const formAddHymn = document.querySelector('[data-js="add-hymn-form"]')
+    // const hymnsList = document.querySelector('[data-js="hymns-list"]')
+
+    onSnapshot(collectionHymns, querySnapshot => {
+      const { hasPendingWrites } = querySnapshot.metadata
+      if (!hasPendingWrites)
+        return
+        
+      console.log(querySnapshot)
+    })
+
+    const parseValue = (key, value) => ({
+      'number': +value,
+    })[key] || value
+
+    const setTimestampValue = items => {
+      const keyTime = items.id ? 'updatedAt' : 'createdAt'
+      items[keyTime] = serverTimestamp()
+    }
+
+    const treatFormValues = (form, timestamp = false) => {
+      const data = new FormData(form)
+      const items = {}
+
+      for (const [key, value] of data) {
+        items[key] = parseValue(key, value)
+      }
+
+      if (timestamp === true) {
+        setTimestampValue(items)
+      }
+      
+      return items
+    }
+
+    function whenFormReset(e) {
+      const inputId = this.querySelector('input[name="id"]')
+      const inputNumber = this.querySelector('input[name="number"]')
+      const btnSubmit = this.querySelector('button[type="submit"]')
+
+      inputId?.remove()
+      inputNumber.readOnly = false
+      btnSubmit.innerText = 'Criar'
+    }
+
+    async function whenFormSubmit(e) {
+      e.preventDefault()
+  
+      const items = treatFormValues(this, true)
+      const idToUpdate = items?.id
+  
+      if (idToUpdate) {
+        const newItems = { ...items }
+        // newItems.updatedAt = newItems.createdAt
+        // delete newItems.createdAt
+        delete newItems.id
+        // const { id: updatedId } = await updateDoc(doc(db, 'hinos', idToUpdate), newItems)
+        // console.log('Document atualizado no ID', updatedId)
+        const yes = await updateDoc(doc(db, 'hinos', idToUpdate), newItems)
+        console.log(yes)
+  
+        this.reset()
+        return
+      }
+  
+      const { id: createdId } = await addDoc(collectionHymns, items)
+      console.log('Document criado com o ID', createdId)
+  
+      this.reset()
+    } 
+
+    formAddHymn.addEventListener('reset', whenFormReset)
+    formAddHymn.addEventListener('submit', whenFormSubmit)
+    
+    const prepareInputsToUpdate = hymnNumber => {
+      onSnapshot(collectionHymns, querySnapshot => {
+        const myDocs = []
+        querySnapshot.forEach(doc => myDocs.push({ ...doc.data(), id: doc.id }))
+        const docOfHymnNumber = myDocs.find(doc => doc.number == hymnNumber)
+
+        console.log(docOfHymnNumber)
+        
+        for (const prop in docOfHymnNumber) {
+          const inputOrSelect = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
+          const docValue = docOfHymnNumber[prop]
+      
+          if (!inputOrSelect) {
+            if (prop === 'id')
+              formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${docValue}">`)
+            
+            continue
+          }
+      
+          if (inputOrSelect.tagName === 'SELECT') {
+            for (const option of inputOrSelect.options) {
+              if (option.value === docValue) {
+                option.selected = true
+                break
+              }
+            }
+      
+            continue
+          }
+      
+          inputOrSelect.value = docValue
+
+          if (inputOrSelect.name === 'number')
+            inputOrSelect.readOnly = true
+        }
+
+        formAddHymn.querySelector('button[type="submit"]').innerText = 'Atualizar'
+      })
+    }
+
+    // const prepareInputsToUpdate = async hymnNumber => {
+    //   const hymns = await query(collectionHymns, where('number', '==', 'Eb'))
+    //   // const hymns = await collectionHymns.where('tonality', '==', 'Eb')
+    //   const hymn = await getDocs(hymns)
+    //   hymn.forEach(doc => console.log(doc))
+    // }
+
+    const init = () => {
+      const hymnNumber = issetHymnNumber()
+
+      if (hymnNumber) {
+        prepareInputsToUpdate(hymnNumber)
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', init)
+  </script> -->
 </body>
 </html>

@@ -1,5 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js'
-import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp, doc, deleteDoc, onSnapshot, } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js'
+import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp, doc, deleteDoc, onSnapshot, }
+  from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js'
 
 const firebaseConfig = {
   apiKey: 'AIzaSyDWvbYwZK6CrG1HRrzQzTryYpzsWrpxm-4',
@@ -9,6 +10,7 @@ const firebaseConfig = {
   messagingSenderId: '525179451222',
   appId: '1:525179451222:web:645112b1647301d30708f7',
   measurementId: 'G-8L1BJ8ZJ68',
+  'Access-Control-Allow-Origin': '*',
 }
 const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
@@ -28,22 +30,41 @@ onSnapshot(collectionHymns, querySnapshot => {
   console.log(querySnapshot)
 })
 
+const parseValue = (key, value) => ({
+  'number': +value,
+})[key] || value
+
+const setTimestampValue = items => {
+  const keyTime = items.id ? 'updatedAt' : 'createdAt'
+  items[keyTime] = serverTimestamp()
+}
+
 const treatFormValues = (form, timestamp = false) => {
   const data = new FormData(form)
   const items = {}
 
   for (const [key, value] of data) {
-    items[key] = key === 'number' ? +value : value
+    items[key] = parseValue(key, value)
   }
 
   if (timestamp === true) {
-    items.createdAt = serverTimestamp()
+    setTimestampValue(items)
   }
-
+  
   return items
 }
 
-formAddHymn.addEventListener('submit', async function(e) {
+function whenFormReset(e) {
+  const inputId = this.querySelector('input[name="id"]')
+  const inputNumber = this.querySelector('input[name="number"]')
+  const btnSubmit = this.querySelector('button[type="submit"]')
+
+  inputId?.remove()
+  inputNumber.readOnly = false
+  btnSubmit.innerText = 'Criar'
+}
+
+async function whenFormSubmit(e) {
   e.preventDefault()
 
   const items = treatFormValues(this, true)
@@ -51,8 +72,9 @@ formAddHymn.addEventListener('submit', async function(e) {
 
   if (idToUpdate) {
     const newItems = { ...items }
-    newItems.updatedAt = newItems.createdAt
-    delete newItems.createdAt
+    // newItems.updatedAt = newItems.createdAt
+    // delete newItems.createdAt
+    delete newItems.id
     // const { id: updatedId } = await updateDoc(doc(db, 'hinos', idToUpdate), newItems)
     // console.log('Document atualizado no ID', updatedId)
     const yes = await updateDoc(doc(db, 'hinos', idToUpdate), newItems)
@@ -66,33 +88,27 @@ formAddHymn.addEventListener('submit', async function(e) {
   console.log('Document criado com o ID', createdId)
 
   this.reset()
-})
+} 
+
+formAddHymn.addEventListener('reset', whenFormReset)
+formAddHymn.addEventListener('submit', whenFormSubmit)
 
 const prepareInputsToUpdate = hymnNumber => {
-  // const hymns = await query(collectionHymns, where('number', '==', hymnNumber))
-  // const hymn = await getDocs(hymns)
-  // hymn.forEach(doc => console.log(doc))
+  onSnapshot(collectionHymns, querySnapshot => {
+    const myDocs = []
+    querySnapshot.forEach(doc => myDocs.push({ ...doc.data(), id: doc.id }))
+    const docOfHymnNumber = myDocs.find(doc => doc.number == hymnNumber)
 
-
-
-  onSnapshot(collectionHymns, ({ docs }) => {
-    const checkHymnNumber = collectionDoc => {
-      return collectionDoc._document.data.value.mapValue.fields.number?.integerValue == hymnNumber ||
-      collectionDoc._document.data.value.mapValue.fields.number?.stringValue == hymnNumber
-    }
-  
-    const docOfHymnNumber = docs.find(checkHymnNumber)
-    const fields = docOfHymnNumber._document.data.value.mapValue.fields
-    const docId = docOfHymnNumber.id
-  
-    formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${docId}">`)
-    formAddHymn.querySelector('button[type="submit"]').innerText = 'Atualizar'
-  
-    for (const prop in fields) {
+    console.log(docOfHymnNumber)
+    
+    for (const prop in docOfHymnNumber) {
       const inputOrSelect = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
-      const docValue = Object.values(fields[prop]).at(0)
+      const docValue = docOfHymnNumber[prop]
   
       if (!inputOrSelect) {
+        if (prop === 'id')
+          formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${docValue}">`)
+        
         continue
       }
   
@@ -112,8 +128,17 @@ const prepareInputsToUpdate = hymnNumber => {
       if (inputOrSelect.name === 'number')
         inputOrSelect.readOnly = true
     }
+
+    formAddHymn.querySelector('button[type="submit"]').innerText = 'Atualizar'
   })
 }
+
+// const prepareInputsToUpdate = async hymnNumber => {
+//   const hymns = await query(collectionHymns, where('number', '==', 'Eb'))
+//   // const hymns = await collectionHymns.where('tonality', '==', 'Eb')
+//   const hymn = await getDocs(hymns)
+//   hymn.forEach(doc => console.log(doc))
+// }
 
 const init = () => {
   const hymnNumber = issetHymnNumber()
