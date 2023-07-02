@@ -16,7 +16,8 @@ const app = initializeApp(firebaseConfig)
 const db = getFirestore(app)
 const collectionHymns = collection(db, 'hinos')
 
-const getUrlParam = strGet => new URL(location).searchParams.get(strGet)
+const getCurrentUrl = () => new URL(location)
+const getUrlParam = strGet => getCurrentUrl().searchParams.get(strGet)
 const issetHymnNumber = () => getUrlParam('number')
 
 const formAddHymn = document.querySelector('[data-js="add-hymn-form"]')
@@ -71,16 +72,15 @@ async function whenFormSubmit(e) {
   const idToUpdate = items?.id
 
   if (idToUpdate) {
-    const newItems = { ...items }
-    // newItems.updatedAt = newItems.createdAt
-    // delete newItems.createdAt
-    delete newItems.id
-    // const { id: updatedId } = await updateDoc(doc(db, 'hinos', idToUpdate), newItems)
-    // console.log('Document atualizado no ID', updatedId)
-    const yes = await updateDoc(doc(db, 'hinos', idToUpdate), newItems)
+    delete items.id
+    const yes = await updateDoc(doc(db, 'hinos', idToUpdate), items)
     console.log(yes)
 
+    const newUrl = getCurrentUrl()
+    newUrl.searchParams('number', yes.id)
+
     this.reset()
+    location = newUrl
     return
   }
 
@@ -97,13 +97,13 @@ const prepareInputsToUpdate = hymnNumber => {
   onSnapshot(collectionHymns, querySnapshot => {
     const myDocs = []
     querySnapshot.forEach(doc => myDocs.push({ ...doc.data(), id: doc.id }))
-    const docOfHymnNumber = myDocs.find(doc => doc.number == hymnNumber)
+    const hymn = myDocs.find(doc => doc.number == hymnNumber)
 
-    console.log(docOfHymnNumber)
+    console.log(hymn)
     
-    for (const prop in docOfHymnNumber) {
+    for (const prop in hymn) {
       const inputOrSelect = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
-      const docValue = docOfHymnNumber[prop]
+      const docValue = hymn[prop]
   
       if (!inputOrSelect) {
         if (prop === 'id')
@@ -130,15 +130,10 @@ const prepareInputsToUpdate = hymnNumber => {
     }
 
     formAddHymn.querySelector('button[type="submit"]').innerText = 'Atualizar'
+
+    console.log(hymn)
   })
 }
-
-// const prepareInputsToUpdate = async hymnNumber => {
-//   const hymns = await query(collectionHymns, where('number', '==', 'Eb'))
-//   // const hymns = await collectionHymns.where('tonality', '==', 'Eb')
-//   const hymn = await getDocs(hymns)
-//   hymn.forEach(doc => console.log(doc))
-// }
 
 const init = () => {
   const hymnNumber = issetHymnNumber()
