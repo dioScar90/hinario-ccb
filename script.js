@@ -1,19 +1,20 @@
-// import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js'
-// import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp, doc, deleteDoc, onSnapshot, }
-//   from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js'
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js'
+import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp, doc, deleteDoc, onSnapshot, }
+  from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js'
 
-// const firebaseConfig = {
-//   apiKey: 'AIzaSyDWvbYwZK6CrG1HRrzQzTryYpzsWrpxm-4',
-//   authDomain: 'hinario-ccb-c94f3.firebaseapp.com',
-//   projectId: 'hinario-ccb-c94f3',
-//   storageBucket: 'hinario-ccb-c94f3.appspot.com',
-//   messagingSenderId: '525179451222',
-//   appId: '1:525179451222:web:645112b1647301d30708f7',
-//   measurementId: 'G-8L1BJ8ZJ68',
-//   'Access-Control-Allow-Origin': '*',
-// }
-// const app = initializeApp(firebaseConfig)
-// const db = getFirestore(app)
+const firebaseConfig = {
+  apiKey: 'AIzaSyDWvbYwZK6CrG1HRrzQzTryYpzsWrpxm-4',
+  authDomain: 'hinario-ccb-c94f3.firebaseapp.com',
+  projectId: 'hinario-ccb-c94f3',
+  storageBucket: 'hinario-ccb-c94f3.appspot.com',
+  messagingSenderId: '525179451222',
+  appId: '1:525179451222:web:645112b1647301d30708f7',
+  measurementId: 'G-8L1BJ8ZJ68',
+  // 'Access-Control-Allow-Origin': '*',
+}
+
+const app = initializeApp(firebaseConfig)
+const db = getFirestore(app)
 const collectionHymns = collection(db, 'hinos')
 
 const getCurrentUrl = () => new URL(location)
