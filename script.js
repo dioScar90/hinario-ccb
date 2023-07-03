@@ -1,19 +1,19 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js'
-import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp, doc, deleteDoc, onSnapshot, }
-  from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js'
+// import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js'
+// import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, serverTimestamp, doc, deleteDoc, onSnapshot, }
+//   from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js'
 
-const firebaseConfig = {
-  apiKey: 'AIzaSyDWvbYwZK6CrG1HRrzQzTryYpzsWrpxm-4',
-  authDomain: 'hinario-ccb-c94f3.firebaseapp.com',
-  projectId: 'hinario-ccb-c94f3',
-  storageBucket: 'hinario-ccb-c94f3.appspot.com',
-  messagingSenderId: '525179451222',
-  appId: '1:525179451222:web:645112b1647301d30708f7',
-  measurementId: 'G-8L1BJ8ZJ68',
-  'Access-Control-Allow-Origin': '*',
-}
-const app = initializeApp(firebaseConfig)
-const db = getFirestore(app)
+// const firebaseConfig = {
+//   apiKey: 'AIzaSyDWvbYwZK6CrG1HRrzQzTryYpzsWrpxm-4',
+//   authDomain: 'hinario-ccb-c94f3.firebaseapp.com',
+//   projectId: 'hinario-ccb-c94f3',
+//   storageBucket: 'hinario-ccb-c94f3.appspot.com',
+//   messagingSenderId: '525179451222',
+//   appId: '1:525179451222:web:645112b1647301d30708f7',
+//   measurementId: 'G-8L1BJ8ZJ68',
+//   'Access-Control-Allow-Origin': '*',
+// }
+// const app = initializeApp(firebaseConfig)
+// const db = getFirestore(app)
 const collectionHymns = collection(db, 'hinos')
 
 const getCurrentUrl = () => new URL(location)
@@ -32,7 +32,7 @@ onSnapshot(collectionHymns, querySnapshot => {
 })
 
 const parseValue = (key, value) => ({
-  'number': +value,
+  'number': +value || 0,
 })[key] || value
 
 const setTimestampValue = items => {
@@ -88,60 +88,49 @@ async function whenFormSubmit(e) {
   console.log('Document criado com o ID', createdId)
 
   this.reset()
-} 
+}
 
-formAddHymn.addEventListener('reset', whenFormReset)
-formAddHymn.addEventListener('submit', whenFormSubmit)
-
-const prepareInputsToUpdate = hymnNumber => {
-  onSnapshot(collectionHymns, querySnapshot => {
-    const myDocs = []
-    querySnapshot.forEach(doc => myDocs.push({ ...doc.data(), id: doc.id }))
-    const hymn = myDocs.find(doc => doc.number == hymnNumber)
-
-    console.log(hymn)
-    
-    for (const prop in hymn) {
-      const inputOrSelect = formAddHymn.querySelector(`:is(input, select)[name="${prop}"]`)
-      const docValue = hymn[prop]
+const renderFormElements = ([ key, value ]) => {
+  const input = formAddHymn.querySelector(`:is(input,select)[name="${key}"]`)
   
-      if (!inputOrSelect) {
-        if (prop === 'id')
-          formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${docValue}">`)
-        
-        continue
-      }
-  
-      if (inputOrSelect.tagName === 'SELECT') {
-        for (const option of inputOrSelect.options) {
-          if (option.value === docValue) {
-            option.selected = true
-            break
-          }
-        }
-  
-        continue
-      }
-  
-      inputOrSelect.value = docValue
+  if (!input) {
+    if (key === 'id')
+      formAddHymn.insertAdjacentHTML('afterbegin', `<input type="hidden" name="id" value="${value}">`)
+    return
+  }
 
-      if (inputOrSelect.name === 'number')
-        inputOrSelect.readOnly = true
-    }
+  if (input.tagName === 'SELECT') {
+    input.options.forEach(option => option.selected = option.value === value ? true : false)
+    return
+  }
 
-    formAddHymn.querySelector('button[type="submit"]').innerText = 'Atualizar'
+  if (input.name === 'number')
+    input.readOnly = true
 
-    console.log(hymn)
-  })
+  input.value = value
+}
+
+const prepareInputsToUpdate = (querySnapshot, hymnNumber) => {
+  const myDocs = []
+  querySnapshot.forEach(({ data, id }) => myDocs.push({ ...data(), id }))
+  const hymn = myDocs.find(({ number }) => number == hymnNumber)
+
+  Object.entries(hymn).forEach(renderFormElements)
+
+  formAddHymn.querySelector('button[type="submit"]').innerText = 'Atualizar'
+
+  console.log(hymn)
 }
 
 const init = () => {
   const hymnNumber = issetHymnNumber()
 
   if (hymnNumber) {
-    prepareInputsToUpdate(hymnNumber)
+    onSnapshot(collectionHymns, querySnapshot => prepareInputsToUpdate(querySnapshot, hymnNumber))
   }
 }
 
+formAddHymn.addEventListener('reset', whenFormReset)
+formAddHymn.addEventListener('submit', whenFormSubmit)
 btnOpenPdf.addEventListener('click', () => open('hinario_5_organista.pdf', '_blank'))
 document.addEventListener('DOMContentLoaded', init)
