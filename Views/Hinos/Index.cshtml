@@ -15,7 +15,7 @@
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.Id)
+                    @Html.DisplayNameFor(model => model.HinoId)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Title)
@@ -34,7 +34,7 @@
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Id)
+                    @Html.DisplayFor(modelItem => item.HinoId)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Title)
@@ -46,8 +46,8 @@
                     @Html.DisplayFor(modelItem => item.Tonality)
                 </td>
                 <td>
-                    <a asp-action="AtualizarHino" asp-route-itemid="@item.Id">Atualizar</a>
-                    <form asp-action="ExcluirHino" asp-route-itemid="@item.Id">
+                    <a asp-action="AtualizarHino" asp-route-itemid="@item.HinoId">Atualizar</a>
+                    <form asp-action="ExcluirHino" asp-route-itemid="@item.HinoId">
                         <button type="submit">Excluir</button>
                     </form>
                 </td>

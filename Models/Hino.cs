@@ -9,13 +9,20 @@ namespace hinario_ccb.Models
     [FirestoreData]
     public class Hino
     {
-        public string Id { get; set; }
+        public string HinoId { get; set; }
+        [FirestoreProperty]
         public string Author { get; set; }
+        [FirestoreProperty]
         public int Number { get; set; }
+        [FirestoreProperty]
         public string Title { get; set; }
+        [FirestoreProperty]
         public Tonality Tonality { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
-        public Boolean IsActive { get; set; }
+        // [FirestoreProperty]
+        // public DateTime CreatedAt { get; set; }
+        // [FirestoreProperty]
+        // public DateTime UpdatedAt { get; set; }
+        // [FirestoreProperty]
+        // public Boolean IsActive { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace hinario_ccb.Controllers
     {
         private readonly IConfiguration _config;
         // private string ConnectionString;
-        private string path = "C:\\xampp\\htdocs\\diogo\\hinario-ccb\\hinario-ccb-c94f3-f4664402416c.json";
+        private string path;
         // readonly string projectId = builder.Configuration.GetValue<string>("project_id");
         readonly string projectId;
         private FirestoreDb _firestoreDb;
@@ -21,8 +21,11 @@ namespace hinario_ccb.Controllers
         public HinosController(IConfiguration config)
         {
             _config = config;
+            // path = @"C:\xampp\htdocs\diogo\hinario-ccb\hinario-ccb-c94f3-f4664402416c.json";
+            path = @"/home/diogo/myprojs/hinario-ccb/hinario-ccb-c94f3-f4664402416c.json";
+            Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", path);
             projectId = _config["Configurations:project_id"];
-            Environment.SetEnvironmentVariable("GOOGLE_APPLICATIONS_CREDENTIALS", path);
+            // Environment.SetEnvironmentVariable("GOOGLE_APPLICATIONS_CREDENTIALS", path);
             // projectId = "hinario-ccb-c94f3";
             _firestoreDb = FirestoreDb.Create(projectId);
         }
@@ -38,9 +41,12 @@ namespace hinario_ccb.Controllers
                 if (documentSnapshot.Exists)
                 {
                     Dictionary<string, object> hino = documentSnapshot.ToDictionary();
+                    // hino["CreatedAt"] = DateTime.Now.ToString();
                     string json = JsonConvert.SerializeObject(hino);
+                    Console.WriteLine("\n\n\n\n" + json + "\n\n\n\n");
                     Hino newHino = JsonConvert.DeserializeObject<Hino>(json);
-                    newHino.Id = documentSnapshot.Id;
+                    newHino.HinoId = documentSnapshot.Id;
+                    // newHino.CreatedAt = documentSnapshot.CreateTime.Value.ToDateTime();
                     hinosList.Add(newHino);
                 }
             }
